@@ -1,0 +1,4 @@
+{
+  "mongoURI": "mongodb+srv://amazon:12345amazon@amazon.wpmiy.mongodb.net/amazon?retryWrites=true&w=majority",
+  "amazonsecret": "amazon_secret"
+}
