@@ -17,7 +17,7 @@ var react_native_size_matters_1 = require("react-native-size-matters");
 var react_native_svg_1 = require("react-native-svg");
 var theme_1 = require("../components/theme");
 exports["default"] = (function (_a) {
-    var size = _a.size, onPress = _a.onPress;
+    var size = _a.size, onPress = _a.onPress, cart = _a.cart;
     return (React.createElement(react_native_1.TouchableWithoutFeedback, __assign({}, { onPress: onPress }),
         React.createElement(react_native_svg_1["default"], { width: react_native_size_matters_1.moderateScale(size), height: react_native_size_matters_1.moderateScale(size), viewBox: "0 0 20 20" },
             React.createElement(react_native_svg_1.Path, { d: "M0 0h20v20H0z", fill: "none", strokeWidth: 3 }),

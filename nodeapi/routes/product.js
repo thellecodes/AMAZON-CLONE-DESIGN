@@ -51,13 +51,33 @@ router.get("/", (req, res) => {
 
 router.delete("/", (req, res) => {
   const { _id } = req.body;
-  console.log(_id)
+  console.log(_id);
 
   Product.findById(_id)
     .then((product) => {
       product.remove().then(() => res.json({ success: true, _id }));
     })
     .catch((err) => res.status(400).json({ success: false }));
+});
+
+router.put("/", (req, res) => {
+  const { _id } = req.body;
+
+  Product.findOneAndUpdate({ _id }, { $set: { cart: true } }, (err, doc) => {
+    if (err) return res.status(400).json({ msg: JSON.stringify(err) });
+    return res.status(200).json(doc);
+  });
+});
+
+router.put("/clear", (req, res) => {
+  Product.updateMany(
+    {},
+    { cart: false },
+    { multi: true, upsert: true },
+    (err, products) => {
+      
+    }
+  );
 });
 
 module.exports = router;

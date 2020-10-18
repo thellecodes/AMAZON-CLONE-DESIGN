@@ -24,7 +24,7 @@ var intialState = {
     loading: true,
     products: [],
     product: null,
-    cartProduts: []
+    cartProducts: []
 };
 exports["default"] = (function (state, _a) {
     if (state === void 0) { state = intialState; }
@@ -41,11 +41,11 @@ exports["default"] = (function (state, _a) {
         case types_1.DELETE_PRODUCT:
             return __assign(__assign({}, state), { products: state.products.filter(function (p) { return p._id !== payload; }) });
         case types_1.ADD_TO_CART:
-            var updatedCart = state.cartProduts.filter(function (p) { return p._id !== payload._id; });
-            var updatedProducts = state.cartProduts.filter(function (p) { return p._id !== payload._id; });
-            return __assign(__assign({}, state), { cartProduts: __spreadArrays([payload], updatedCart), products: __spreadArrays([payload], updatedProducts) });
+            var updatedCart = state.cartProducts.filter(function (p) { return p._id !== payload._id; });
+            var updatedProducts = state.cartProducts.filter(function (p) { return p._id !== payload._id; });
+            return __assign(__assign({}, state), { cartProducts: __spreadArrays([payload], updatedCart), products: __spreadArrays([payload], updatedProducts) });
         case types_1.CHECK_OUT:
-            return __assign(__assign({}, state), { cartProduts: [], products: payload });
+            return __assign(__assign({}, state), { cartProducts: [], products: payload });
         default:
             return state;
     }

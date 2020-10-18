@@ -36,11 +36,12 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
-exports.addToCart = exports.deleteProduct = exports.loadProducts = exports.addProduct = void 0;
+exports.clearCart = exports.productCheckOut = exports.addToCart = exports.deleteProduct = exports.loadProducts = exports.addProduct = void 0;
 var async_storage_1 = require("@react-native-community/async-storage");
 var axios_1 = require("axios");
 var errorActions_1 = require("./dist/errorActions");
-var types_1 = require("./types");
+var types_1 = require("./dist/types");
+var types_2 = require("./types");
 exports.addProduct = function (_a) {
     var title = _a.title, price = _a.price, imageUrl = _a.imageUrl, desc = _a.desc;
     return function (dispatch, getState) { return __awaiter(void 0, void 0, void 0, function () {
@@ -52,7 +53,7 @@ exports.addProduct = function (_a) {
             //* Store a product
             axios_1["default"]({
                 method: 'POST',
-                url: types_1.API_URI + "/api/product",
+                url: types_2.API_URI + "/api/product",
                 data: data,
                 headers: {
                     'content-type': 'application/json',
@@ -60,8 +61,8 @@ exports.addProduct = function (_a) {
                 }
             })
                 .then(function (res) {
-                dispatch({ type: types_1.CLEAR_ERRORS, payload: null });
-                dispatch({ type: types_1.SENT_PRODUCT, payload: res.data._doc });
+                dispatch({ type: types_2.CLEAR_ERRORS, payload: null });
+                dispatch({ type: types_2.SENT_PRODUCT, payload: res.data._doc });
             })["catch"](function (err) {
                 dispatch(errorActions_1.returnErrors(err.response.data, err.response.status, 'PRODUCT_POST_FAIL'));
             });
@@ -75,21 +76,21 @@ exports.loadProducts = function () { return function (dispatch) { return __await
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                dispatch({ type: types_1.LOADING_PRODUCTS, payload: null });
+                dispatch({ type: types_2.LOADING_PRODUCTS, payload: null });
                 return [4 /*yield*/, async_storage_1["default"].getItem('@user_token')];
             case 1:
                 token = _a.sent();
                 //* Load products from url *//
                 axios_1["default"]({
                     method: 'GET',
-                    url: types_1.API_URI + "/api/product",
+                    url: types_2.API_URI + "/api/product",
                     headers: {
                         'content-type': 'application/json',
                         'x-amazon-token': token
                     }
                 })
                     .then(function (res) {
-                    dispatch({ type: types_1.LOADED_PRODUCTS, payload: res.data });
+                    dispatch({ type: types_2.LOADED_PRODUCTS, payload: res.data });
                 })["catch"](function (err) {
                     dispatch(errorActions_1.returnErrors(err.response.data, err.response.status, 'LOAD_PRODUCT_FAIL'));
                 });
@@ -108,7 +109,7 @@ exports.deleteProduct = function (_id) { return function (dispatch) { return __a
                 token = _a.sent();
                 axios_1["default"]({
                     method: 'DELETE',
-                    url: types_1.API_URI + "/api/product",
+                    url: types_2.API_URI + "/api/product",
                     data: data,
                     headers: {
                         'content-type': 'application/json',
@@ -116,7 +117,7 @@ exports.deleteProduct = function (_id) { return function (dispatch) { return __a
                     }
                 })
                     .then(function (res) {
-                    dispatch({ type: types_1.DELETE_PRODUCT, payload: res.data._id });
+                    dispatch({ type: types_2.DELETE_PRODUCT, payload: res.data._id });
                 })["catch"](function (err) {
                     dispatch(errorActions_1.returnErrors(err.response.data, err.response.status, 'DELETE_PRODUCT_FAIL'));
                 });
@@ -126,7 +127,79 @@ exports.deleteProduct = function (_id) { return function (dispatch) { return __a
 }); }; };
 //* Amazon add to cart *//
 exports.addToCart = function (_id) { return function (dispatch, getState) { return __awaiter(void 0, void 0, void 0, function () {
+    var _a, products, cartProducts, cartProduct, isInCart, data, token;
+    return __generator(this, function (_b) {
+        switch (_b.label) {
+            case 0:
+                _a = getState().product, products = _a.products, cartProducts = _a.cartProducts;
+                cartProduct = cartProducts.filter(function (p) { return p._id === _id; });
+                isInCart = cartProduct.length > 0;
+                data = JSON.stringify({ _id: _id });
+                return [4 /*yield*/, async_storage_1["default"].getItem('@user_token')];
+            case 1:
+                token = _b.sent();
+                if (!isInCart) {
+                    axios_1["default"]({
+                        method: 'PUT',
+                        url: types_2.API_URI + "/api/product",
+                        headers: {
+                            'content-type': 'application/json',
+                            'x-amazon-token': token
+                        },
+                        data: data
+                    })
+                        .then(function (res) {
+                        dispatch({ type: types_1.ADD_TO_CART, payload: res.data });
+                    })["catch"](function (err) {
+                        dispatch(errorActions_1.returnErrors(err.response.data, err.response.status, 'ADD_TO_CART_FAIL'));
+                    });
+                }
+                return [2 /*return*/];
+        }
+    });
+}); }; };
+exports.productCheckOut = function () { return function (dispatch) { return __awaiter(void 0, void 0, void 0, function () {
+    var token;
     return __generator(this, function (_a) {
-        return [2 /*return*/];
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, async_storage_1["default"].getItem('@user_token')];
+            case 1:
+                token = _a.sent();
+                axios_1["default"]({
+                    method: 'GET',
+                    url: types_2.API_URI + "/api/product",
+                    headers: {
+                        'content-type': 'application/json',
+                        'x-amazon-token': token
+                    }
+                })
+                    .then(function (res) {
+                    dispatch({ type: types_1.CHECK_OUT, payload: res.data });
+                })["catch"](function (err) {
+                    dispatch(errorActions_1.returnErrors(err.response.data, err.response.status, 'CHECKOUT_FAIL'));
+                });
+                return [2 /*return*/];
+        }
+    });
+}); }; };
+exports.clearCart = function () { return function (dispatch) { return __awaiter(void 0, void 0, void 0, function () {
+    var token;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, async_storage_1["default"].getItem('@user_token')];
+            case 1:
+                token = _a.sent();
+                axios_1["default"]({
+                    method: 'PUT',
+                    url: types_2.API_URI + "/api/product/clear",
+                    headers: {
+                        'x-amazon-token': token
+                    }
+                })
+                    .then(function () {
+                    return exports.loadProducts();
+                })["catch"](function () { });
+                return [2 /*return*/];
+        }
     });
 }); }; };

@@ -13,6 +13,8 @@ import {SpringUtils, useValue, Value} from 'react-native-reanimated';
 import {useEffect} from 'react';
 import {withSpringTransition} from 'react-native-redash';
 import Animated from 'react-native-reanimated';
+import {useDispatch} from 'react-redux';
+import {clearCart} from '../../store/actions/productActions';
 const {height} = Dimensions.get('window');
 
 interface ProductDetailsProps {
@@ -23,14 +25,66 @@ interface ProductDetailsProps {
 }
 
 function ProductCheckOut({navigation}: ProductDetailsProps) {
+  const dispatch: any = useDispatch();
+
   const onBack = () => {
     navigation.pop();
   };
+
   const onContinue = () => {
-    navigation.replace('ProductList');
+    dispatch(clearCart()).then(() => {
+      navigation.replace('ProductList');
+    });
   };
 
-  return null;
+  return (
+    <Box flex={1} backgroundColor="primary" justifyContent="flex-start">
+      <TouchableWithoutFeedback onPress={onBack}>
+        <Box flexDirection="column" alignItems="center" backgroundColor="white">
+          <ProductHeader back={false} />
+        </Box>
+      </TouchableWithoutFeedback>
+
+      <Box height={height * 0.4} justifyContent="center" alignItems="center">
+        <Text variant="title" fontSize={CUSTOMFONT(42)}>
+          Thanks
+        </Text>
+      </Box>
+      <Box
+        flex={1}
+        backgroundColor="white"
+        borderTopLeftRadius="xl"
+        borderTopRightRadius="xl"
+        justifyContent="center"
+        alignItems="center">
+        <Check size={90} />
+        <Text
+          fontSize={CUSTOMFONT(15)}
+          variant="title"
+          textAlign="center"
+          color="primary"
+          marginTop="m">
+          Thank you for purchasing this produts.
+        </Text>
+
+        <Text
+          fontSize={CUSTOMFONT(12)}
+          textAlign="center"
+          marginTop="m"
+          color="primary"
+          variant="smtitle">
+          Your order will be shipped in 2-4 international days
+        </Text>
+
+        <Button
+          label="Continue Shopping"
+          variant="primary"
+          style={{marginTop: 80}}
+          onPress={onContinue}
+        />
+      </Box>
+    </Box>
+  );
 }
 
 export default ProductCheckOut;

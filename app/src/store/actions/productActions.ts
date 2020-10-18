@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-community/async-storage';
 import axios from 'axios';
 import {returnErrors} from './dist/errorActions';
-import {ADD_TO_CART} from './dist/types';
+import {ADD_TO_CART, CHECK_OUT} from './dist/types';
 import {
   AllDispatchProp,
   API_URI,
@@ -114,4 +114,69 @@ export const addToCart = (_id: string) => async (
   dispatch: AllDispatchProp,
   getState: any,
 ) => {
+  const {products, cartProducts} = getState().product;
+  const cartProduct = cartProducts.filter((p: any) => p._id === _id);
+  const isInCart = cartProduct.length > 0;
+  const data = JSON.stringify({_id});
+  const token = await AsyncStorage.getItem('@user_token');
+
+  if (!isInCart) {
+    axios({
+      method: 'PUT',
+      url: `${API_URI}/api/product`,
+      headers: {
+        'content-type': 'application/json',
+        'x-amazon-token': token,
+      },
+      data,
+    })
+      .then((res) => {
+        dispatch({type: ADD_TO_CART, payload: res.data});
+      })
+      .catch((err) => {
+        dispatch(
+          returnErrors(
+            err.response.data,
+            err.response.status,
+            'ADD_TO_CART_FAIL',
+          ),
+        );
+      });
+  }
+};
+
+export const productCheckOut = () => async (dispatch: AllDispatchProp) => {
+  const token = await AsyncStorage.getItem('@user_token');
+
+  axios({
+    method: 'GET',
+    url: `${API_URI}/api/product`,
+    headers: {
+      'content-type': 'application/json',
+      'x-amazon-token': token,
+    },
+  })
+    .then((res) => {
+      dispatch({type: CHECK_OUT, payload: res.data});
+    })
+    .catch((err) => {
+      dispatch(
+        returnErrors(err.response.data, err.response.status, 'CHECKOUT_FAIL'),
+      );
+    });
+};
+
+export const clearCart = () => async (dispatch: AllDispatchProp) => {
+  const token = await AsyncStorage.getItem('@user_token');
+  axios({
+    method: 'PUT',
+    url: `${API_URI}/api/product/clear`,
+    headers: {
+      'x-amazon-token': token,
+    },
+  })
+    .then(() => {
+      return loadProducts();
+    })
+    .catch(() => {});
 };

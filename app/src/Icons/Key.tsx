@@ -7,9 +7,10 @@ import theme from '../components/theme';
 export interface IconProps {
   onPress?: () => void;
   size: number;
+  cart: boolean;
 }
 
-export default ({size, onPress}: IconProps) => {
+export default ({size, onPress, cart}: IconProps) => {
   return (
     <TouchableWithoutFeedback {...{onPress}}>
       <Svg

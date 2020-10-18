@@ -88,4 +88,27 @@ router["delete"]("/", function (req, res) {
     });
   });
 });
+router.put("/", function (req, res) {
+  var _id = req.body._id;
+  Product.findOneAndUpdate({
+    _id: _id
+  }, {
+    $set: {
+      cart: true
+    }
+  }, function (err, doc) {
+    if (err) return res.status(400).json({
+      msg: JSON.stringify(err)
+    });
+    return res.status(200).json(doc);
+  });
+});
+router.put("/clear", function (req, res) {
+  Product.updateMany({}, {
+    cart: false
+  }, {
+    multi: true,
+    upsert: true
+  }, function (err, products) {});
+});
 module.exports = router;

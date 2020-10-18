@@ -13,7 +13,7 @@ const intialState = {
   loading: true,
   products: [],
   product: null,
-  cartProduts: [],
+  cartProducts: [],
 };
 
 export default (state = intialState, {payload, type}: any) => {
@@ -47,21 +47,21 @@ export default (state = intialState, {payload, type}: any) => {
         products: state.products.filter((p: any) => p._id !== payload),
       };
     case ADD_TO_CART:
-      const updatedCart = state.cartProduts.filter(
+      const updatedCart = state.cartProducts.filter(
         (p: any) => p._id !== payload._id,
       );
-      const updatedProducts = state.cartProduts.filter(
+      const updatedProducts = state.cartProducts.filter(
         (p: any) => p._id !== payload._id,
       );
       return {
         ...state,
-        cartProduts: [payload, ...updatedCart],
+        cartProducts: [payload, ...updatedCart],
         products: [payload, ...updatedProducts],
       };
     case CHECK_OUT:
       return {
         ...state,
-        cartProduts: [],
+        cartProducts: [],
         products: payload,
       };
     default:
